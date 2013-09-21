@@ -12,20 +12,26 @@ void mapper(const long numReducers,
             std::string jobname,
             mapFunc map)
 {
-    std::ifstream in(filename, std::ios::in | std::ios::binary);
+    FILE * pFile;
+  	long lSize;
+  	char * buffer;
+  	size_t result;
+  	
+  	
+  	pFile = fopen ( filename , "rb" );
+	if (pFile==NULL) {fputs ("File error",stderr); exit (1);}
 
-    if (!in)
-    {
-        std::cerr << "Could not open input file. Exiting." << std::endl;
-        exit(1);
-    }
-
-    std::string contents;
-    in.seekg(0, std::ios::end);
-    contents.resize(in.tellg());
-    in.seekg(0, std::ios::beg);
-    in.read(&contents[0], contents.size());
-    in.close();
+	fseek (pFile , 0 , SEEK_END);
+	lSize = ftell (pFile);
+	rewind (pFile);
+	
+	buffer = (char*) malloc (sizeof(char)*lSize);
+  	if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
+  	
+  	result = fread (buffer,1,lSize,pFile);
+  	if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
+  	
+	std::string contents = std::string(buffer);
 
     MapperWriter outwriter;
     std::string fn = std::string(filename);
