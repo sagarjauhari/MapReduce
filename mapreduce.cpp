@@ -32,6 +32,7 @@ void mapper(const long numReducers,
   	if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
   	
 	std::string contents = std::string(buffer);
+	free(buffer);
 
     MapperWriter outwriter;
     std::string fn = std::string(filename);
